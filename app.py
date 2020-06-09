@@ -2,6 +2,34 @@ from vega_datasets import data
 import streamlit as st
 import altair as alt
 
+def is_authenticated(password):
+    return password == "admin"
+
+
+def generate_login_block():
+    block1 = st.empty()
+    block2 = st.empty()
+
+    return block1, block2
+
+
+def clean_blocks(blocks):
+    for block in blocks:
+        block.empty()
+
+
+def login(blocks):
+    blocks[0].markdown("""
+            <style>
+                input {
+                    -webkit-text-security: disc;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
+    return blocks[1].text_input('Password')
+
+
 def main():
     df = load_data()
     page = st.sidebar.selectbox("Choose a page", ["Homepage", "Exploration"])
@@ -32,5 +60,15 @@ def visualize_data(df, x_axis, y_axis):
     st.write(graph)
 
 if __name__ == "__main__":
-    main()
+    st.write('Tela de Login')
+    login_blocks = generate_login_block()
+    password = login(login_blocks)
+
+    if is_authenticated(password):
+        clean_blocks(login_blocks)
+        st.balloons()
+        main()
+
+    elif password:
+        st.info("Please enter a valid password")
 
